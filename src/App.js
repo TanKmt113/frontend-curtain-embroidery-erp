@@ -72,7 +72,8 @@ import { WorkOrderList, WorkOrderDetail, WorkOrderCreate } from "./screens/WorkO
 import { QCList, QCForm } from "./screens/QC";
 import { InventoryList, InventoryReceive, InventoryHistory } from "./screens/Inventory";
 import { DeliveryList, DeliveryForm, DeliverySchedule } from "./screens/Delivery";
-import { UserList, RoleList } from "./screens/Settings";
+import { UserList, RoleList, GeneralSettings, CompanySettings } from "./screens/Settings";
+import { Reports } from "./screens/Reports";
 
 window.__DEV__ = true;
 
@@ -175,6 +176,11 @@ class App extends React.Component {
                     exact
                     path={`${process.env.PUBLIC_URL}/dashboard`}
                     component={dashboard}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/reports`}
+                    component={Reports}
                   />
                   <Route
                     exact
@@ -585,6 +591,16 @@ class App extends React.Component {
                     exact
                     path={`${process.env.PUBLIC_URL}/roles`}
                     component={RoleList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/settings-general`}
+                    component={GeneralSettings}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/settings-company`}
+                    component={CompanySettings}
                   />
 
                 </Switch>
