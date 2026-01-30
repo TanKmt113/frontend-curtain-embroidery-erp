@@ -44,11 +44,20 @@ class WorkOrderList extends React.Component {
     this.setState({ loading: true });
 
     try {
-      const response = await workOrderService.getAll({
+      // Build query params, only include non-empty values
+      const params = {
         page: pagination.page,
         limit: pagination.limit,
-        ...filters,
-      });
+      };
+
+      // Only add filter params if they have values
+      if (filters.search) params.search = filters.search;
+      if (filters.status) params.status = filters.status;
+      if (filters.step) params.step = filters.step;
+      if (filters.dateFrom) params.dateFrom = filters.dateFrom;
+      if (filters.dateTo) params.dateTo = filters.dateTo;
+
+      const response = await workOrderService.getAll(params);
 
       this.setState({
         workOrders: response.data || [],

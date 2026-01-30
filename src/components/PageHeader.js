@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import * as echarts from "echarts";
 import {
   visitorsSparcalOption,
@@ -72,9 +73,9 @@ class PageHeader extends React.Component {
             </h2>
             <ul className="breadcrumb">
               <li className="breadcrumb-item">
-                <a href="dashboard">
+                <Link to="/dashboard">
                   <i className="icon-home"></i>
-                </a>
+                </Link>
               </li>
               {Breadcrumb.map((item, index) => {
                 return (
@@ -82,9 +83,11 @@ class PageHeader extends React.Component {
                     key={item.name + index}
                     className="breadcrumb-item active"
                   >
-                    <a href={item.navigate ? item.navigate : null}>
-                      {item.name}
-                    </a>
+                    {item.navigate ? (
+                      <Link to={item.navigate}>{item.name}</Link>
+                    ) : (
+                      <span>{item.name}</span>
+                    )}
                   </li>
                 );
               })}

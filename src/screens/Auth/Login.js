@@ -7,11 +7,11 @@ import { login, clearError } from "../actions/AuthAction";
 class Login extends React.Component {
   constructor(props) {
     super(props);
-
+    
     // Kiểm tra remember me
     const rememberedEmail = localStorage.getItem('rememberedEmail') || '';
     const rememberMe = localStorage.getItem('rememberMe') === 'true';
-
+    
     this.state = {
       isLoad: true,
       email: rememberedEmail,
@@ -26,14 +26,12 @@ class Login extends React.Component {
     setTimeout(() => {
       this.setState({ isLoad: false });
     }, 500);
-
+    
     // Xóa các theme class cũ
     document.body.classList.remove("theme-cyan", "theme-purple", "theme-blue", "theme-green", "theme-orange", "theme-blush");
-
+    
     // Clear error khi mount
-    if (this.props.clearError) {
-      this.props.clearError();
-    }
+    this.props.clearError();
   }
 
   componentDidUpdate(prevProps) {
@@ -73,12 +71,12 @@ class Login extends React.Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     if (!this.validateForm()) return;
 
     const { email, password, rememberMe } = this.state;
     const result = await this.props.login(email, password, rememberMe);
-
+    
     if (result.success) {
       this.props.history.push('/dashboard');
     }
@@ -124,9 +122,9 @@ class Login extends React.Component {
                       <div className="alert alert-danger alert-dismissible fade show" role="alert">
                         <i className="fa fa-exclamation-triangle mr-2"></i>
                         {error}
-                        <button
-                          type="button"
-                          className="close"
+                        <button 
+                          type="button" 
+                          className="close" 
                           onClick={() => this.props.clearError()}
                         >
                           <span>&times;</span>
@@ -186,13 +184,14 @@ class Login extends React.Component {
                             autoComplete="current-password"
                           />
                           <div className="input-group-append">
-                            <span 
-                              className="input-group-text" 
-                              style={{ cursor: 'pointer' }}
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
                               onClick={this.togglePassword}
+                              tabIndex="-1"
                             >
                               <i className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-                            </span>
+                            </button>
                           </div>
                         </div>
                         {errors.password && (
@@ -259,9 +258,9 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = ({ auth }) => ({
-  isLoading: auth?.isLoading || false,
-  isAuthenticated: auth?.isAuthenticated || false,
-  error: auth?.error || null,
+  isLoading: auth.isLoading,
+  isAuthenticated: auth.isAuthenticated,
+  error: auth.error,
 });
 
 const mapDispatchToProps = {

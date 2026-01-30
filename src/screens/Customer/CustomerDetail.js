@@ -28,16 +28,24 @@ class CustomerDetail extends React.Component {
 
   loadCustomer = async (id) => {
     try {
-      const [customerRes, ordersRes] = await Promise.all([
-        customerService.getById(id),
-        customerService.getOrderHistory(id, { limit: 10 }),
-      ]);
-
+      // Chỉ load thông tin khách hàng trước
+      const customerRes = await customerService.getById(id);
+      
       this.setState({
         customer: customerRes.data,
-        orders: ordersRes.data || [],
         loading: false,
       });
+
+      // Thử load lịch sử đơn hàng nếu API hỗ trợ
+      try {
+        const ordersRes = await customerService.getOrderHistory(id, { limit: 10 });
+        this.setState({
+          orders: ordersRes.data || [],
+        });
+      } catch (e) {
+        // API order history chưa có, bỏ qua
+        console.log("Order history API not available");
+      }
     } catch (error) {
       toastError("Không thể tải thông tin khách hàng");
       this.setState({ loading: false });

@@ -1,0 +1,10 @@
+export { default as Login } from "./Login";
+export { default as ForgotPassword } from "./ForgotPassword";
+export { default as ResetPassword } from "./ResetPassword";
+export { default as ChangePassword } from "./ChangePassword";
+export { default as Registration } from "./Registration";
+export { default as Lockscreen } from "./Lockscreen";
+export { default as Page403 } from "./Page403";
+export { default as Page404 } from "./Page404";
+export { default as Page500 } from "./Page500";
+export { default as Page503 } from "./Page503";

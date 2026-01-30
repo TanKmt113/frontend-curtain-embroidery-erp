@@ -30,4 +30,5 @@ export {
   qcService,
   inventoryService,
   deliveryService,
+  userService,
 } from './services';

@@ -41,12 +41,15 @@ class CustomerList extends React.Component {
     this.setState({ loading: true });
 
     try {
-      const response = await customerService.getAll({
+      // Chỉ gửi params có giá trị
+      const params = {
         page: pagination.page,
         limit: pagination.limit,
-        search: filters.search,
-        type: filters.type,
-      });
+      };
+      if (filters.search) params.search = filters.search;
+      if (filters.type) params.type = filters.type;
+
+      const response = await customerService.getAll(params);
 
       this.setState({
         customers: response.data || [],

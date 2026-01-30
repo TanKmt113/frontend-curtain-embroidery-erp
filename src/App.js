@@ -36,6 +36,8 @@ import widgetsecommers from "./screens/Widgets/ECommers";
 import registration from "./screens/Auth/Registration";
 import lockscreen from "./screens/Auth/Lockscreen";
 import forgotpassword from "./screens/Auth/ForgotPassword";
+import resetpassword from "./screens/Auth/ResetPassword";
+import changepassword from "./screens/Auth/ChangePassword";
 import page404 from "./screens/Auth/Page404";
 import page403 from "./screens/Auth/Page403";
 import page500 from "./screens/Auth/Page500";
@@ -60,6 +62,17 @@ import basicelements from "./screens/Forms/BasicElements";
 import tablenormal from "./screens/Tables/TableNormal";
 import echart from "./screens/Charts/Echart";
 import leafletmap from "./screens/Maps/GoogleMaps";
+
+// ERP Module Screens
+import { CustomerList, CustomerForm, CustomerDetail } from "./screens/Customer";
+import { ProductList, ProductForm } from "./screens/Product";
+import { QuotationList, QuotationForm } from "./screens/Quotation";
+import { OrderList, OrderForm, OrderDetail } from "./screens/Order";
+import { WorkOrderList, WorkOrderDetail, WorkOrderCreate } from "./screens/WorkOrder";
+import { QCList, QCForm } from "./screens/QC";
+import { InventoryList, InventoryReceive, InventoryHistory } from "./screens/Inventory";
+import { DeliveryList, DeliveryForm, DeliverySchedule } from "./screens/Delivery";
+import { UserList, RoleList } from "./screens/Settings";
 
 window.__DEV__ = true;
 
@@ -88,6 +101,7 @@ class App extends React.Component {
         activeKey1 === "registration" ||
         activeKey1 === "lockscreen" ||
         activeKey1 === "forgotpassword" ||
+        activeKey1 === "resetpassword" ||
         activeKey1 === "page404" ||
         activeKey1 === "page403" ||
         activeKey1 === "page500" ||
@@ -109,6 +123,11 @@ class App extends React.Component {
                 exact
                 path={`${process.env.PUBLIC_URL}/forgotpassword`}
                 component={forgotpassword}
+              />
+              <Route
+                exact
+                path={`${process.env.PUBLIC_URL}/resetpassword`}
+                component={resetpassword}
               />
               <Route
                 exact
@@ -156,6 +175,11 @@ class App extends React.Component {
                     exact
                     path={`${process.env.PUBLIC_URL}/dashboard`}
                     component={dashboard}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/change-password`}
+                    component={changepassword}
                   />
                   <Route
                     exact
@@ -397,6 +421,172 @@ class App extends React.Component {
                     path={`${process.env.PUBLIC_URL}/leafletmap`}
                     component={leafletmap}
                   />
+
+                  {/* ===== ERP Module Routes ===== */}
+                  
+                  {/* Customer Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/customers`}
+                    component={CustomerList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/customer-create`}
+                    component={CustomerForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/customer-edit/:id`}
+                    component={CustomerForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/customer-detail/:id`}
+                    component={CustomerDetail}
+                  />
+
+                  {/* Product Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/products`}
+                    component={ProductList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/product-create`}
+                    component={ProductForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/product-edit/:id`}
+                    component={ProductForm}
+                  />
+
+                  {/* Quotation Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/quotations`}
+                    component={QuotationList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/quotation-create`}
+                    component={QuotationForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/quotation-edit/:id`}
+                    component={QuotationForm}
+                  />
+
+                  {/* Order Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/orders`}
+                    component={OrderList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/order-create`}
+                    component={OrderForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/order-edit/:id`}
+                    component={OrderForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/order-detail/:id`}
+                    component={OrderDetail}
+                  />
+
+                  {/* Work Order Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/work-orders`}
+                    component={WorkOrderList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/work-order-create`}
+                    component={WorkOrderCreate}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/work-order-detail/:id`}
+                    component={WorkOrderDetail}
+                  />
+
+                  {/* QC Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/qc`}
+                    component={QCList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/qc-create`}
+                    component={QCForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/qc-edit/:id`}
+                    component={QCForm}
+                  />
+
+                  {/* Inventory Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/inventory`}
+                    component={InventoryList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/inventory-receive`}
+                    component={InventoryReceive}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/inventory-history`}
+                    component={InventoryHistory}
+                  />
+
+                  {/* Delivery Routes */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/deliveries`}
+                    component={DeliveryList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/delivery-create`}
+                    component={DeliveryForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/delivery-edit/:id`}
+                    component={DeliveryForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/delivery-schedule`}
+                    component={DeliverySchedule}
+                  />
+
+                  {/* Settings Module */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/users`}
+                    component={UserList}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/roles`}
+                    component={RoleList}
+                  />
+
                 </Switch>
               </div>
           </>

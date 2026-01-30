@@ -12,3 +12,4 @@ export { default as workOrderService } from './workOrderService';
 export { default as qcService } from './qcService';
 export { default as inventoryService } from './inventoryService';
 export { default as deliveryService } from './deliveryService';
+export { default as userService } from './userService';

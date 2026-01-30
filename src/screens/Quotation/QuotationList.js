@@ -1,22 +1,22 @@
 /**
- * Product List Screen
- * Danh sách sản phẩm
+ * Quotation List Screen
+ * Danh sách báo giá
  */
 
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
-import ProductTable from "../../components/Product/ProductTable";
-import ProductFilter from "../../components/Product/ProductFilter";
-import { productService } from "../../api";
+import QuotationTable from "../../components/Quotation/QuotationTable";
+import QuotationFilter from "../../components/Quotation/QuotationFilter";
+import { quotationService } from "../../api";
 import { toastError, toastSuccess } from "../../utils/toast";
 
-class ProductList extends React.Component {
+class QuotationList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      products: [],
+      quotations: [],
       loading: true,
       pagination: {
         page: 1,
@@ -26,18 +26,19 @@ class ProductList extends React.Component {
       },
       filters: {
         search: "",
-        type: "",
         status: "",
+        dateFrom: "",
+        dateTo: "",
       },
     };
   }
 
   componentDidMount() {
     window.scrollTo(0, 0);
-    this.loadProducts();
+    this.loadQuotations();
   }
 
-  loadProducts = async () => {
+  loadQuotations = async () => {
     const { pagination, filters } = this.state;
     this.setState({ loading: true });
 
@@ -50,13 +51,14 @@ class ProductList extends React.Component {
 
       // Only add filter params if they have values
       if (filters.search) params.search = filters.search;
-      if (filters.type) params.type = filters.type;
       if (filters.status) params.status = filters.status;
+      if (filters.dateFrom) params.dateFrom = filters.dateFrom;
+      if (filters.dateTo) params.dateTo = filters.dateTo;
 
-      const response = await productService.getAll(params);
+      const response = await quotationService.getAll(params);
 
       this.setState({
-        products: response.data || [],
+        quotations: response.data || [],
         pagination: {
           ...pagination,
           total: response.meta?.total || 0,
@@ -65,7 +67,7 @@ class ProductList extends React.Component {
         loading: false,
       });
     } catch (error) {
-      toastError(error.message || "Không thể tải danh sách sản phẩm");
+      toastError(error.message || "Không thể tải danh sách báo giá");
       this.setState({ loading: false });
     }
   };
@@ -76,7 +78,7 @@ class ProductList extends React.Component {
         filters,
         pagination: { ...this.state.pagination, page: 1 },
       },
-      () => this.loadProducts()
+      () => this.loadQuotations()
     );
   };
 
@@ -85,26 +87,36 @@ class ProductList extends React.Component {
       {
         pagination: { ...this.state.pagination, page },
       },
-      () => this.loadProducts()
+      () => this.loadQuotations()
     );
   };
 
   handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
-      return;
-    }
+    if (!window.confirm("Bạn có chắc muốn xóa báo giá này?")) return;
 
     try {
-      await productService.delete(id);
-      toastSuccess("Xóa sản phẩm thành công");
-      this.loadProducts();
+      await quotationService.delete(id);
+      toastSuccess("Xóa báo giá thành công");
+      this.loadQuotations();
     } catch (error) {
-      toastError(error.message || "Không thể xóa sản phẩm");
+      toastError(error.message || "Không thể xóa báo giá");
+    }
+  };
+
+  handleConvertToOrder = async (id) => {
+    if (!window.confirm("Chuyển báo giá này thành đơn hàng?")) return;
+
+    try {
+      await quotationService.convertToOrder(id);
+      toastSuccess("Đã tạo đơn hàng từ báo giá");
+      this.loadQuotations();
+    } catch (error) {
+      toastError(error.message || "Không thể chuyển thành đơn hàng");
     }
   };
 
   render() {
-    const { products, loading, pagination, filters } = this.state;
+    const { quotations, loading, pagination, filters } = this.state;
 
     return (
       <div
@@ -116,9 +128,9 @@ class ProductList extends React.Component {
         <div>
           <div className="container-fluid">
             <PageHeader
-              HeaderText="Danh sách sản phẩm"
+              HeaderText="Báo giá"
               Breadcrumb={[
-                { name: "Sản phẩm", navigate: "" },
+                { name: "Báo giá", navigate: "" },
                 { name: "Danh sách", navigate: "" },
               ]}
             />
@@ -127,25 +139,26 @@ class ProductList extends React.Component {
               <div className="col-lg-12">
                 <div className="card">
                   <div className="header">
-                    <h2>Sản phẩm</h2>
+                    <h2>Danh sách báo giá</h2>
                     <Link
-                      to="/product-create"
+                      to="/quotation-create"
                       className="btn btn-primary btn-sm float-right"
                     >
-                      <i className="fa fa-plus"></i> Thêm sản phẩm
+                      <i className="fa fa-plus"></i> Tạo báo giá
                     </Link>
                   </div>
                   <div className="body">
-                    <ProductFilter
+                    <QuotationFilter
                       filters={filters}
                       onFilterChange={this.handleFilterChange}
                     />
-                    <ProductTable
-                      products={products}
+                    <QuotationTable
+                      quotations={quotations}
                       loading={loading}
                       pagination={pagination}
                       onPageChange={this.handlePageChange}
                       onDelete={this.handleDelete}
+                      onConvertToOrder={this.handleConvertToOrder}
                     />
                   </div>
                 </div>
@@ -160,4 +173,4 @@ class ProductList extends React.Component {
 
 const mapStateToProps = ({ ioTReducer }) => ({});
 
-export default connect(mapStateToProps, {})(ProductList);
+export default connect(mapStateToProps, {})(QuotationList);

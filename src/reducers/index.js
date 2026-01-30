@@ -1,5 +1,6 @@
 import { combineReducers } from "redux";
 import loginReducer from "./loginReducer";
+import authReducer from "./authReducer";
 import navigationReducer from "./navigationReducer";
 import analyticalReducer from "./analyticalReducer";
 import demographicReducer from "./demographicReducer";
@@ -9,6 +10,7 @@ import UIElementsReducer from "./UIElementsReducer";
 
 export default combineReducers({
   loginReducer,
+  auth: authReducer,
   navigationReducer: navigationReducer,
   analyticalReducer: analyticalReducer,
   demographicReducer: demographicReducer,

@@ -39,84 +39,50 @@ class NavbarMenu extends React.Component {
   }
 
   activeMenutabwhenNavigate(activeKey) {
+    // Dashboard
     if (
       activeKey === "/dashboard" ||
       activeKey === "/demographic" ||
-      activeKey === "/ioT"
+      activeKey === "/ioT" ||
+      activeKey === "/reports"
     ) {
       this.activeMenutabContainer("dashboradContainer");
-    } else if (
-      activeKey === "/appinbox" ||
-      activeKey === "/appchat" ||
-      activeKey === "/appcalendar" ||
-      activeKey === "/appcontact" ||
-      activeKey === "/apptaskbar"
-    ) {
-      this.activeMenutabContainer("AppContainer");
-    } else if (
-      activeKey === "/filemanagerdashboard" ||
-      activeKey === "/filedocuments" ||
-      activeKey === "/filemedia"
-    ) {
-      this.activeMenutabContainer("FileManagerContainer");
-    } else if (
-      activeKey === "/blognewpost" ||
-      activeKey === "/bloglist" ||
-      activeKey === "/blogdetails"
-    ) {
-      this.activeMenutabContainer("BlogContainer");
-    } else if (
-      activeKey === "/uitypography" ||
-      activeKey === "/uitabs" ||
-      activeKey === "/uibuttons" ||
-      activeKey === "/bootstrapui" ||
-      activeKey === "/uiicons" ||
-      activeKey === "/uinotifications" ||
-      activeKey === "/uicolors" ||
-      activeKey === "/uilistgroup" ||
-      activeKey === "/uimediaobject" ||
-      activeKey === "/uimodal" ||
-      activeKey === "/uiprogressbar"
-    ) {
-      this.activeMenutabContainer("UIElementsContainer");
-    } else if (
-      activeKey === "/widgetsdata" ||
-      activeKey === "/widgetsweather" ||
-      activeKey === "/widgetsblog" ||
-      activeKey === "/widgetsecommers"
-    ) {
-      this.activeMenutabContainer("WidgetsContainer");
-    } else if (activeKey === "/login") {
-      this.activeMenutabContainer("WidgetsContainer");
-    } else if (
-      activeKey === "/teamsboard" ||
-      activeKey === "/profilev2page" ||
-      activeKey === "/helperclass" ||
-      activeKey === "/searchresult" ||
-      activeKey === "/invoicesv2" ||
-      activeKey === "/invoices" ||
-      activeKey === "/pricing" ||
-      activeKey === "/timeline" ||
-      activeKey === "/profilev1page" ||
-      activeKey === "/blankpage" ||
-      activeKey === "/imagegalleryprofile" ||
-      activeKey === "/projectslist" ||
-      activeKey === "/maintanance" ||
-      activeKey === "/testimonials" ||
-      activeKey === "/faqs"
-    ) {
-      this.activeMenutabContainer("PagesContainer");
-    } else if (
-      activeKey === "/formvalidation" ||
-      activeKey === "/basicelements"
-    ) {
-      this.activeMenutabContainer("FormsContainer");
-    } else if (activeKey === "/tablenormal") {
-      this.activeMenutabContainer("TablesContainer");
-    } else if (activeKey === "/echart") {
-      this.activeMenutabContainer("chartsContainer");
-    } else if (activeKey === "/leafletmap") {
-      this.activeMenutabContainer("MapsContainer");
+    }
+    // Khách hàng
+    else if (activeKey && activeKey.includes("customer")) {
+      this.activeMenutabContainer("CustomerContainer");
+    }
+    // Sản phẩm
+    else if (activeKey && activeKey.includes("product")) {
+      this.activeMenutabContainer("ProductContainer");
+    }
+    // Báo giá
+    else if (activeKey && activeKey.includes("quotation")) {
+      this.activeMenutabContainer("QuotationContainer");
+    }
+    // Đơn hàng
+    else if (activeKey && activeKey.includes("order") && !activeKey.includes("work-order")) {
+      this.activeMenutabContainer("OrderContainer");
+    }
+    // Sản xuất
+    else if (activeKey && (activeKey.includes("work-order") || activeKey.includes("production"))) {
+      this.activeMenutabContainer("WorkOrderContainer");
+    }
+    // QC
+    else if (activeKey && activeKey.includes("qc")) {
+      this.activeMenutabContainer("QCContainer");
+    }
+    // Kho
+    else if (activeKey && activeKey.includes("inventory")) {
+      this.activeMenutabContainer("InventoryContainer");
+    }
+    // Giao hàng
+    else if (activeKey && (activeKey.includes("deliver") || activeKey.includes("installation"))) {
+      this.activeMenutabContainer("DeliveryContainer");
+    }
+    // Cài đặt
+    else if (activeKey && (activeKey.includes("user") || activeKey.includes("role") || activeKey.includes("setting"))) {
+      this.activeMenutabContainer("SettingsContainer");
     }
   }
 
@@ -130,15 +96,23 @@ class NavbarMenu extends React.Component {
     var parents = document.getElementById("main-menu");
     var activeMenu = document.getElementById(id);
 
+    if (!parents || !activeMenu) return;
+
     for (let index = 0; index < parents.children.length; index++) {
       if (parents.children[index].id !== id) {
         parents.children[index].classList.remove("active");
-        parents.children[index].children[1].classList.remove("in");
+        if (parents.children[index].children[1]) {
+          parents.children[index].children[1].classList.remove("in");
+        }
       }
     }
     setTimeout(() => {
-      activeMenu.classList.toggle("active");
-      activeMenu.children[1].classList.toggle("in");
+      if (activeMenu) {
+        activeMenu.classList.toggle("active");
+        if (activeMenu.children[1]) {
+          activeMenu.children[1].classList.toggle("in");
+        }
+      }
     }, 10);
   }
   render() {
@@ -188,7 +162,7 @@ class NavbarMenu extends React.Component {
             </div>
 
             <div className="navbar-brand">
-              <a href="dashboard">
+              <Link to="/dashboard">
                 <img
                   src={
                     document.body.classList.contains("full-dark")
@@ -198,7 +172,7 @@ class NavbarMenu extends React.Component {
                   alt="Lucid Logo"
                   className="img-responsive logo"
                 />
-              </a>
+              </Link>
             </div>
 
             <div className="navbar-right">
@@ -216,31 +190,31 @@ class NavbarMenu extends React.Component {
               <div id="navbar-menu">
                 <ul className="nav navbar-nav">
                   <li>
-                    <a
-                      href="filedocuments"
+                    <Link
+                      to="/filedocuments"
                       className="icon-menu d-none d-sm-block d-md-none d-lg-block"
                     >
                       <i className="fa fa-folder-open-o"></i>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="appcalendar"
+                    <Link
+                      to="/appcalendar"
                       className="icon-menu d-none d-sm-block d-md-none d-lg-block"
                     >
                       <i className="icon-calendar"></i>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="appchat" className="icon-menu d-none d-sm-block">
+                    <Link to="/appchat" className="icon-menu d-none d-sm-block">
                       <i className="icon-bubbles"></i>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="appinbox" className="icon-menu d-none d-sm-block">
+                    <Link to="/appinbox" className="icon-menu d-none d-sm-block">
                       <i className="icon-envelope"></i>
                       <span className="notification-dot"></span>
-                    </a>
+                    </Link>
                   </li>
                   <li
                     className={
@@ -401,9 +375,9 @@ class NavbarMenu extends React.Component {
                     </ul>
                   </li>
                   <li>
-                    <a href="login" className="icon-menu">
+                    <Link to="/login" className="icon-menu">
                       <i className="icon-login"></i>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -477,7 +451,7 @@ class NavbarMenu extends React.Component {
                   Menu
                 </a>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <a
                   className={sideMenuTab[1] ? "nav-link active" : "nav-link"}
                   data-toggle="tab"
@@ -487,7 +461,7 @@ class NavbarMenu extends React.Component {
                 >
                   <i className="icon-book-open"></i>
                 </a>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <a
                   className={sideMenuTab[2] ? "nav-link active" : "nav-link"}
@@ -499,7 +473,7 @@ class NavbarMenu extends React.Component {
                   <i className="icon-settings"></i>
                 </a>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <a
                   className={sideMenuTab[3] ? "nav-link active" : "nav-link"}
                   data-toggle="tab"
@@ -509,7 +483,7 @@ class NavbarMenu extends React.Component {
                 >
                   <i className="icon-question"></i>
                 </a>
-              </li>
+              </li> */}
             </ul>
             <div className="tab-content p-l-0 p-r-0">
               <div
@@ -554,33 +528,18 @@ class NavbarMenu extends React.Component {
                           this.activeMenutabContainer("CustomerContainer");
                         }}
                       >
-                        <i className="icon-people"></i> <span>Khách hàng</span>
+                        <i className="icon-users"></i> <span>Khách hàng</span>
                       </a>
                       <ul className="collapse">
                         <li
                           className={activeKey === "customers" ? "active" : ""}
                         >
-                          <Link to="customers">Danh sách khách hàng</Link>
+                          <Link to="/customers">Danh sách khách hàng</Link>
                         </li>
                         <li
                           className={activeKey === "customer-create" ? "active" : ""}
                         >
-                          <Link to="customer-create">Thêm khách hàng</Link>
-                        </li>
-                        <li
-                          className={activeKey === "customer-individual" ? "active" : ""}
-                        >
-                          <Link to="customer-individual">Khách cá nhân</Link>
-                        </li>
-                        <li
-                          className={activeKey === "customer-company" ? "active" : ""}
-                        >
-                          <Link to="customer-company">Khách công ty</Link>
-                        </li>
-                        <li
-                          className={activeKey === "customer-consignment" ? "active" : ""}
-                        >
-                          <Link to="customer-consignment">Khách ký gửi</Link>
+                          <Link to="/customer-create">Thêm khách hàng</Link>
                         </li>
                       </ul>
                     </li>
@@ -601,32 +560,12 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "products" ? "active" : ""}
                         >
-                          <Link to="products">Danh sách sản phẩm</Link>
+                          <Link to="/products">Danh sách sản phẩm</Link>
                         </li>
                         <li
                           className={activeKey === "product-create" ? "active" : ""}
                         >
-                          <Link to="product-create">Thêm sản phẩm</Link>
-                        </li>
-                        <li
-                          className={activeKey === "product-curtain" ? "active" : ""}
-                        >
-                          <Link to="product-curtain">Rèm các loại</Link>
-                        </li>
-                        <li
-                          className={activeKey === "product-embroidery" ? "active" : ""}
-                        >
-                          <Link to="product-embroidery">Dịch vụ thêu</Link>
-                        </li>
-                        <li
-                          className={activeKey === "product-cushion" ? "active" : ""}
-                        >
-                          <Link to="product-cushion">Đệm/Gối</Link>
-                        </li>
-                        <li
-                          className={activeKey === "product-accessory" ? "active" : ""}
-                        >
-                          <Link to="product-accessory">Phụ kiện</Link>
+                          <Link to="/product-create">Thêm sản phẩm</Link>
                         </li>
                       </ul>
                     </li>
@@ -647,27 +586,12 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "quotations" ? "active" : ""}
                         >
-                          <Link to="quotations">Danh sách báo giá</Link>
+                          <Link to="/quotations">Danh sách báo giá</Link>
                         </li>
                         <li
                           className={activeKey === "quotation-create" ? "active" : ""}
                         >
-                          <Link to="quotation-create">Tạo báo giá</Link>
-                        </li>
-                        <li
-                          className={activeKey === "quotation-draft" ? "active" : ""}
-                        >
-                          <Link to="quotation-draft">Bản nháp</Link>
-                        </li>
-                        <li
-                          className={activeKey === "quotation-sent" ? "active" : ""}
-                        >
-                          <Link to="quotation-sent">Đã gửi</Link>
-                        </li>
-                        <li
-                          className={activeKey === "quotation-approved" ? "active" : ""}
-                        >
-                          <Link to="quotation-approved">Đã duyệt</Link>
+                          <Link to="/quotation-create">Tạo báo giá</Link>
                         </li>
                       </ul>
                     </li>
@@ -688,32 +612,12 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "orders" ? "active" : ""}
                         >
-                          <Link to="orders">Danh sách đơn hàng</Link>
+                          <Link to="/orders">Danh sách đơn hàng</Link>
                         </li>
                         <li
                           className={activeKey === "order-create" ? "active" : ""}
                         >
-                          <Link to="order-create">Tạo đơn hàng</Link>
-                        </li>
-                        <li
-                          className={activeKey === "order-pending" ? "active" : ""}
-                        >
-                          <Link to="order-pending">Chờ xác nhận</Link>
-                        </li>
-                        <li
-                          className={activeKey === "order-confirmed" ? "active" : ""}
-                        >
-                          <Link to="order-confirmed">Đã xác nhận</Link>
-                        </li>
-                        <li
-                          className={activeKey === "order-production" ? "active" : ""}
-                        >
-                          <Link to="order-production">Đang sản xuất</Link>
-                        </li>
-                        <li
-                          className={activeKey === "order-completed" ? "active" : ""}
-                        >
-                          <Link to="order-completed">Hoàn thành</Link>
+                          <Link to="/order-create">Tạo đơn hàng</Link>
                         </li>
                       </ul>
                     </li>
@@ -734,32 +638,32 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "work-orders" ? "active" : ""}
                         >
-                          <Link to="work-orders">Lệnh sản xuất</Link>
+                          <Link to="/work-orders">Lệnh sản xuất</Link>
                         </li>
                         <li
                           className={activeKey === "work-order-create" ? "active" : ""}
                         >
-                          <Link to="work-order-create">Tạo lệnh SX</Link>
+                          <Link to="/work-order-create">Tạo lệnh SX</Link>
                         </li>
                         <li
                           className={activeKey === "work-order-pending" ? "active" : ""}
                         >
-                          <Link to="work-order-pending">Chờ sản xuất</Link>
+                          <Link to="/work-order-pending">Chờ sản xuất</Link>
                         </li>
                         <li
                           className={activeKey === "work-order-inprogress" ? "active" : ""}
                         >
-                          <Link to="work-order-inprogress">Đang thực hiện</Link>
+                          <Link to="/work-order-inprogress">Đang thực hiện</Link>
                         </li>
                         <li
                           className={activeKey === "work-order-completed" ? "active" : ""}
                         >
-                          <Link to="work-order-completed">Hoàn thành</Link>
+                          <Link to="/work-order-completed">Hoàn thành</Link>
                         </li>
                         <li
                           className={activeKey === "production-routing" ? "active" : ""}
                         >
-                          <Link to="production-routing">Quy trình SX</Link>
+                          <Link to="/production-routing">Quy trình SX</Link>
                         </li>
                       </ul>
                     </li>
@@ -780,22 +684,22 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "qc-records" ? "active" : ""}
                         >
-                          <Link to="qc-records">Biên bản QC</Link>
+                          <Link to="/qc-records">Biên bản QC</Link>
                         </li>
                         <li
                           className={activeKey === "qc-create" ? "active" : ""}
                         >
-                          <Link to="qc-create">Tạo biên bản QC</Link>
+                          <Link to="/qc-create">Tạo biên bản QC</Link>
                         </li>
                         <li
                           className={activeKey === "qc-pass" ? "active" : ""}
                         >
-                          <Link to="qc-pass">Đạt chất lượng</Link>
+                          <Link to="/qc-pass">Đạt chất lượng</Link>
                         </li>
                         <li
                           className={activeKey === "qc-fail" ? "active" : ""}
                         >
-                          <Link to="qc-fail">Không đạt</Link>
+                          <Link to="/qc-fail">Không đạt</Link>
                         </li>
                       </ul>
                     </li>
@@ -816,32 +720,32 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "inventory" ? "active" : ""}
                         >
-                          <Link to="inventory">Tồn kho</Link>
+                          <Link to="/inventory">Tồn kho</Link>
                         </li>
                         <li
                           className={activeKey === "inventory-receive" ? "active" : ""}
                         >
-                          <Link to="inventory-receive">Nhập kho</Link>
+                          <Link to="/inventory-receive">Nhập kho</Link>
                         </li>
                         <li
                           className={activeKey === "inventory-issue" ? "active" : ""}
                         >
-                          <Link to="inventory-issue">Xuất kho</Link>
+                          <Link to="/inventory-issue">Xuất kho</Link>
                         </li>
                         <li
                           className={activeKey === "inventory-company" ? "active" : ""}
                         >
-                          <Link to="inventory-company">Hàng công ty</Link>
+                          <Link to="/inventory-company">Hàng công ty</Link>
                         </li>
                         <li
                           className={activeKey === "inventory-consignment" ? "active" : ""}
                         >
-                          <Link to="inventory-consignment">Hàng ký gửi</Link>
+                          <Link to="/inventory-consignment">Hàng ký gửi</Link>
                         </li>
                         <li
                           className={activeKey === "inventory-history" ? "active" : ""}
                         >
-                          <Link to="inventory-history">Lịch sử giao dịch</Link>
+                          <Link to="/inventory-history">Lịch sử giao dịch</Link>
                         </li>
                       </ul>
                     </li>
@@ -862,32 +766,32 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "deliveries" ? "active" : ""}
                         >
-                          <Link to="deliveries">Danh sách giao hàng</Link>
+                          <Link to="/deliveries">Danh sách giao hàng</Link>
                         </li>
                         <li
                           className={activeKey === "delivery-create" ? "active" : ""}
                         >
-                          <Link to="delivery-create">Tạo lịch giao</Link>
+                          <Link to="/delivery-create">Tạo lịch giao</Link>
                         </li>
                         <li
                           className={activeKey === "delivery-scheduled" ? "active" : ""}
                         >
-                          <Link to="delivery-scheduled">Đã lên lịch</Link>
+                          <Link to="/delivery-scheduled">Đã lên lịch</Link>
                         </li>
                         <li
                           className={activeKey === "delivery-intransit" ? "active" : ""}
                         >
-                          <Link to="delivery-intransit">Đang vận chuyển</Link>
+                          <Link to="/delivery-intransit">Đang vận chuyển</Link>
                         </li>
                         <li
                           className={activeKey === "delivery-completed" ? "active" : ""}
                         >
-                          <Link to="delivery-completed">Đã giao</Link>
+                          <Link to="/delivery-completed">Đã giao</Link>
                         </li>
                         <li
                           className={activeKey === "installations" ? "active" : ""}
                         >
-                          <Link to="installations">Lắp đặt</Link>
+                          <Link to="/installations">Lắp đặt</Link>
                         </li>
                       </ul>
                     </li>
@@ -908,22 +812,22 @@ class NavbarMenu extends React.Component {
                         <li
                           className={activeKey === "users" ? "active" : ""}
                         >
-                          <Link to="users">Người dùng</Link>
+                          <Link to="/users">Người dùng</Link>
                         </li>
                         <li
                           className={activeKey === "roles" ? "active" : ""}
                         >
-                          <Link to="roles">Phân quyền</Link>
+                          <Link to="/roles">Phân quyền</Link>
                         </li>
                         <li
                           className={activeKey === "settings-general" ? "active" : ""}
                         >
-                          <Link to="settings-general">Cài đặt chung</Link>
+                          <Link to="/settings-general">Cài đặt chung</Link>
                         </li>
                         <li
                           className={activeKey === "settings-company" ? "active" : ""}
                         >
-                          <Link to="settings-company">Thông tin công ty</Link>
+                          <Link to="/settings-company">Thông tin công ty</Link>
                         </li>
                       </ul>
                     </li>

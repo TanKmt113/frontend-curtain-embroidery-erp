@@ -44,8 +44,14 @@ class CustomerForm extends React.Component {
     this.setState({ loading: true });
     try {
       const response = await customerService.getById(id);
+      const data = response.data;
+      // Đảm bảo type có giá trị hợp lệ
       this.setState({
-        formData: response.data,
+        formData: {
+          ...this.state.formData,
+          ...data,
+          type: data.type || "INDIVIDUAL",
+        },
         loading: false,
       });
     } catch (error) {
@@ -80,6 +86,19 @@ class CustomerForm extends React.Component {
     return Object.keys(errors).length === 0;
   };
 
+  // Loại bỏ các field rỗng trước khi gửi API
+  cleanFormData = (data) => {
+    const cleaned = {};
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      // Chỉ giữ lại field có giá trị (không rỗng, không null, không undefined)
+      if (value !== "" && value !== null && value !== undefined) {
+        cleaned[key] = value;
+      }
+    });
+    return cleaned;
+  };
+
   handleSubmit = async (e) => {
     e.preventDefault();
     if (!this.validate()) return;
@@ -88,12 +107,15 @@ class CustomerForm extends React.Component {
     const { isEdit, formData } = this.state;
     const { id } = this.props.match.params;
 
+    // Loại bỏ các field rỗng trước khi gửi
+    const submitData = this.cleanFormData(formData);
+
     try {
       if (isEdit) {
-        await customerService.update(id, formData);
+        await customerService.update(id, submitData);
         toastSuccess("Cập nhật khách hàng thành công");
       } else {
-        await customerService.create(formData);
+        await customerService.create(submitData);
         toastSuccess("Tạo khách hàng thành công");
       }
       this.props.history.push("/customers");
