@@ -32,6 +32,8 @@ const ProductTable = ({ products, loading, pagination, onPageChange, onDelete })
     return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
   };
 
+  const imageBaseUrl = process.env.REACT_APP_API_URL || "http://localhost:3000";
+
   if (loading) {
     return (
       <div className="text-center p-5">
@@ -96,6 +98,17 @@ const ProductTable = ({ products, loading, pagination, onPageChange, onDelete })
                   >
                     <i className="fa fa-trash"></i>
                   </button>
+                </td>
+                <td>
+                  {product.image ? (
+                    <img
+                      src={`${imageBaseUrl}${product.image}`}
+                      alt={product.name}
+                      style={{ width: 50, height: 50, objectFit: "cover", borderRadius: 4 }}
+                    />
+                  ) : (
+                    <i className="fa fa-image text-muted"></i>
+                  )}
                 </td>
               </tr>
             ))}

@@ -406,7 +406,7 @@ class ProductDetail extends React.Component {
                   <div className="body text-center">
                     {product.image ? (
                       <img
-                        src={product.image}
+                        src={`${imageBaseUrl}${product.image}`}
                         alt={product.name}
                         style={{
                           maxWidth: "100%",
@@ -493,3 +493,6 @@ const mapStateToProps = ({ navigationReducer }) => {
 };
 
 export default withRouter(connect(mapStateToProps)(ProductDetail));
+
+// Update the image rendering logic to handle the image path returned by the API
+const imageBaseUrl = process.env.REACT_APP_API_URL || "http://localhost:3000";

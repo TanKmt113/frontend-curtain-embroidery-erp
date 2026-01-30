@@ -72,11 +72,25 @@ const productService = {
 
   /**
    * Upload hình ảnh sản phẩm
-   * @param {string} id - ID sản phẩm
+   * @param {File} file - File hình ảnh
+   * @returns {Promise<{url: string, filename: string, size: number, mimetype: string}>}
+   */
+  async uploadImage(file) {
+    const response = await httpClient.upload('/upload/image?folder=products', file, 'file');
+    return response.data || response;
+  },
+
+  /**
+   * Upload hình ảnh và cập nhật vào sản phẩm
+   * @param {string} productId - ID sản phẩm
    * @param {File} file - File hình ảnh
    */
-  async uploadImage(id, file) {
-    return httpClient.upload(`/products/${id}/image`, file);
+  async uploadProductImage(productId, file) {
+    // Upload file first
+    const uploadResult = await this.uploadImage(file);
+    // Then update product with image URL
+    await this.update(productId, { image: uploadResult.url });
+    return uploadResult;
   },
 };
 

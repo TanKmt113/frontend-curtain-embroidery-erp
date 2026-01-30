@@ -20,15 +20,18 @@ class ProductForm extends React.Component {
       formData: {
         name: "",
         code: "",
-        type: "CURTAIN_FABRIC",
+        type: "CURTAIN",
         unit: "m",
         basePrice: "",
         description: "",
-        specifications: "",
-        status: "ACTIVE",
+        image: "",
+        isActive: true,
       },
+      imagePreview: null,
+      imageFile: null,
       errors: {},
     };
+    this.fileInputRef = React.createRef();
   }
 
   componentDidMount() {
@@ -44,8 +47,19 @@ class ProductForm extends React.Component {
     this.setState({ loading: true });
     try {
       const response = await productService.getById(id);
+      const product = response.data || response;
       this.setState({
-        formData: response.data,
+        formData: {
+          name: product.name || "",
+          code: product.code || "",
+          type: product.type || "CURTAIN",
+          unit: product.unit || "m",
+          basePrice: product.basePrice || "",
+          description: product.description || "",
+          image: product.image || "",
+          isActive: product.isActive !== undefined ? product.isActive : true,
+        },
+        imagePreview: product.image || null,
         loading: false,
       });
     } catch (error) {
@@ -55,11 +69,51 @@ class ProductForm extends React.Component {
   };
 
   handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     this.setState({
-      formData: { ...this.state.formData, [name]: value },
+      formData: { 
+        ...this.state.formData, 
+        [name]: type === "checkbox" ? checked : value 
+      },
       errors: { ...this.state.errors, [name]: "" },
     });
+  };
+
+  handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      if (!allowedTypes.includes(file.type)) {
+        toastError("Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)");
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toastError("Kích thước ảnh không được vượt quá 5MB");
+        return;
+      }
+      
+      this.setState({ imageFile: file });
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({ imagePreview: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  handleRemoveImage = () => {
+    this.setState({
+      imageFile: null,
+      imagePreview: null,
+      formData: { ...this.state.formData, image: "" },
+    });
+    if (this.fileInputRef.current) {
+      this.fileInputRef.current.value = "";
+    }
   };
 
   validate = () => {
@@ -82,13 +136,32 @@ class ProductForm extends React.Component {
     if (!this.validate()) return;
 
     this.setState({ submitting: true });
-    const { isEdit, formData } = this.state;
+    const { isEdit, formData, imageFile } = this.state;
     const { id } = this.props.match.params;
 
     try {
+      // Upload image first if there's a new file
+      let imageUrl = formData.image;
+      if (imageFile) {
+        try {
+          const uploadResult = await productService.uploadImage(imageFile);
+          imageUrl = uploadResult.url;
+        } catch (imgError) {
+          console.error("Image upload failed:", imgError);
+          toastError("Upload hình ảnh thất bại: " + (imgError.message || "Lỗi không xác định"));
+          this.setState({ submitting: false });
+          return;
+        }
+      }
+
       const submitData = {
-        ...formData,
+        name: formData.name,
+        type: formData.type,
+        unit: formData.unit,
         basePrice: parseFloat(formData.basePrice),
+        description: formData.description || undefined,
+        image: imageUrl || undefined,
+        isActive: formData.isActive,
       };
 
       if (isEdit) {
@@ -98,6 +171,7 @@ class ProductForm extends React.Component {
         await productService.create(submitData);
         toastSuccess("Tạo sản phẩm thành công");
       }
+
       this.props.history.push("/products");
     } catch (error) {
       if (error.errors) {
@@ -110,15 +184,12 @@ class ProductForm extends React.Component {
   };
 
   render() {
-    const { isEdit, loading, submitting, formData, errors } = this.state;
+    const { isEdit, loading, submitting, formData, errors, imagePreview } = this.state;
 
     const productTypes = [
-      { value: "CURTAIN_FABRIC", label: "Rèm vải" },
-      { value: "CURTAIN_ROMAN", label: "Rèm roman" },
-      { value: "CURTAIN_ROLLER", label: "Rèm cuốn" },
-      { value: "CURTAIN_VERTICAL", label: "Rèm lá dọc" },
-      { value: "CUSHION", label: "Đệm/Gối" },
-      { value: "EMBROIDERY", label: "Dịch vụ thêu" },
+      { value: "CURTAIN", label: "Rèm" },
+      { value: "EMBROIDERY", label: "Gia công thêu/đệm" },
+      { value: "MATERIAL", label: "Nguyên vật liệu" },
       { value: "ACCESSORY", label: "Phụ kiện" },
     ];
 
@@ -129,6 +200,8 @@ class ProductForm extends React.Component {
       { value: "set", label: "Bộ" },
       { value: "kg", label: "Kg" },
     ];
+
+    const imageBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
     if (loading) {
       return (
@@ -269,15 +342,114 @@ class ProductForm extends React.Component {
                         <div className="col-md-6">
                           <div className="form-group">
                             <label>Trạng thái</label>
-                            <select
-                              className="form-control"
-                              name="status"
-                              value={formData.status}
-                              onChange={this.handleChange}
-                            >
-                              <option value="ACTIVE">Đang kinh doanh</option>
-                              <option value="INACTIVE">Ngừng kinh doanh</option>
-                            </select>
+                            <div className="custom-control custom-switch mt-2">
+                              <input
+                                type="checkbox"
+                                className="custom-control-input"
+                                id="isActive"
+                                name="isActive"
+                                checked={formData.isActive}
+                                onChange={this.handleChange}
+                              />
+                              <label className="custom-control-label" htmlFor="isActive">
+                                {formData.isActive ? (
+                                  <span className="badge badge-success">Đang kinh doanh</span>
+                                ) : (
+                                  <span className="badge badge-danger">Ngừng kinh doanh</span>
+                                )}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className="col-md-12">
+                          <div className="form-group">
+                            <label>Hình ảnh sản phẩm</label>
+                            <div className="row">
+                              <div className="col-md-4">
+                                <div
+                                  style={{
+                                    width: "100%",
+                                    height: 200,
+                                    border: "2px dashed #ddd",
+                                    borderRadius: 8,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    overflow: "hidden",
+                                    background: "#f9f9f9",
+                                    position: "relative",
+                                  }}
+                                >
+                                  {imagePreview ? (
+                                    <>
+                                      <img
+                                        src={imagePreview.startsWith('http') ? imagePreview : `${imageBaseUrl}${imagePreview}`}
+                                        alt="Preview"
+                                        style={{
+                                          maxWidth: "100%",
+                                          maxHeight: "100%",
+                                          objectFit: "contain",
+                                        }}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="btn btn-sm btn-danger"
+                                        style={{
+                                          position: "absolute",
+                                          top: 8,
+                                          right: 8,
+                                        }}
+                                        onClick={this.handleRemoveImage}
+                                      >
+                                        <i className="fa fa-times"></i>
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <div className="text-center text-muted">
+                                      <i className="fa fa-image fa-3x mb-2"></i>
+                                      <br />
+                                      <small>Chưa có hình ảnh</small>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-8">
+                                <input
+                                  type="file"
+                                  ref={this.fileInputRef}
+                                  className="form-control-file"
+                                  accept="image/*"
+                                  onChange={this.handleImageChange}
+                                  style={{ display: "none" }}
+                                  id="imageInput"
+                                />
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-primary mb-2"
+                                  onClick={() => this.fileInputRef.current?.click()}
+                                >
+                                  <i className="fa fa-upload mr-1"></i>
+                                  Chọn hình ảnh
+                                </button>
+                                <p className="text-muted mb-1">
+                                  <small>
+                                    • Định dạng: JPG, PNG, GIF, WEBP<br />
+                                    • Kích thước tối đa: 5MB<br />
+                                    • Khuyến nghị: 800x800 pixels
+                                  </small>
+                                </p>
+                                {formData.image && !this.state.imageFile && (
+                                  <p className="text-info mb-0">
+                                    <small>
+                                      <i className="fa fa-check-circle mr-1"></i>
+                                      Đã có hình ảnh được lưu
+                                    </small>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -289,22 +461,8 @@ class ProductForm extends React.Component {
                               name="description"
                               value={formData.description}
                               onChange={this.handleChange}
-                              placeholder="Nhập mô tả sản phẩm"
-                              rows="3"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>Thông số kỹ thuật</label>
-                            <textarea
-                              className="form-control"
-                              name="specifications"
-                              value={formData.specifications}
-                              onChange={this.handleChange}
-                              placeholder="Nhập thông số kỹ thuật (kích thước, chất liệu, màu sắc...)"
-                              rows="3"
+                              placeholder="Nhập mô tả sản phẩm (thông số kỹ thuật, chất liệu, màu sắc...)"
+                              rows="4"
                             />
                           </div>
                         </div>
