@@ -65,7 +65,7 @@ import leafletmap from "./screens/Maps/GoogleMaps";
 
 // ERP Module Screens
 import { CustomerList, CustomerForm, CustomerDetail } from "./screens/Customer";
-import { ProductList, ProductForm } from "./screens/Product";
+import { ProductList, ProductForm, ProductDetail } from "./screens/Product";
 import { QuotationList, QuotationForm } from "./screens/Quotation";
 import { OrderList, OrderForm, OrderDetail } from "./screens/Order";
 import { WorkOrderList, WorkOrderDetail, WorkOrderCreate } from "./screens/WorkOrder";
@@ -462,6 +462,11 @@ class App extends React.Component {
                     exact
                     path={`${process.env.PUBLIC_URL}/product-create`}
                     component={ProductForm}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/product-detail/:id`}
+                    component={ProductDetail}
                   />
                   <Route
                     exact
